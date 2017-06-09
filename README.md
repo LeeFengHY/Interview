@@ -158,6 +158,7 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
     //MARK: 插入排序[8 4 3 5 2 1]
     func insertionSort(list: inout Array<Int>)
     {
+        if list.count == 1 { return }
         for i in 1..<list.count {
             var j = i
             while j > 0 && list[j - 1] > list[j] {
