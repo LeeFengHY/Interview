@@ -62,7 +62,57 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
 
 9. 编写一个函数，接受一个数组array作为参数，array中包含N个长度不等的升序数组，请将这N个数组合并，并保证合并后的数组也是升序。
 答：归并排序。
-
+    //MARK: 归并排序
+    /**
+     8 4 5 3 1 2
+     8 4 5   3 1 2
+     8  4 5  3  1 2
+       4   5    1   2 ---> [1 2]-->[3] [1 2]
+     第一步：递归将一个大数组切割成N个数组，直到N个元素为1，典型分治思想。
+     第二步：再将N个数组递归合并一个大序列，合并过程中做好排序。
+     缺点：额外空间和N成正比。
+     */
+    func mergeSort(_ list: Array<Int>) -> [Int]
+    {
+        if list.count == 1 { return list}
+        let middleIndex = list.count / 2
+        let leftArray: Array<Int> = self.mergeSort(Array(list[0..<middleIndex]))
+        let rightArray: Array<Int> = self.mergeSort(Array(list[middleIndex..<list.count]))
+        return merge(leftArray: leftArray, rightArray: rightArray)
+    }
+    
+    func merge(leftArray: Array<Int>, rightArray: Array<Int>) -> [Int]
+    {
+        var leftIndex = 0
+        var rightIndex = 0
+        var orderArray: Array<Int> = Array()
+        while leftIndex < leftArray.count && rightIndex < rightArray.count {
+            if leftArray[leftIndex] > rightArray[rightIndex] {
+                orderArray.append(leftArray[leftIndex])
+                leftIndex = leftIndex + 1
+            }else if leftArray[leftIndex] < rightArray[rightIndex] {
+                orderArray.append(rightArray[rightIndex])
+                rightIndex = rightIndex + 1
+            }else {
+                orderArray.append(leftArray[leftIndex])
+                leftIndex = leftIndex + 1
+                orderArray.append(rightArray[rightIndex])
+                rightIndex = rightIndex + 1
+            }
+        }
+        
+        while leftIndex < leftArray.count {
+            orderArray.append(leftArray[leftIndex])
+            leftIndex = leftIndex + 1
+        }
+        
+        while rightIndex < rightArray.count {
+            orderArray.append(rightArray[rightIndex])
+            rightIndex = rightIndex + 1
+        }
+        return orderArray
+    }
+    
 10. 写出快速排序、冒泡排序、选择排序、插入排序。
     // MARK: 快速排序 
     /**
