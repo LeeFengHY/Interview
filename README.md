@@ -55,5 +55,103 @@ char1个字节、float2个字节int4个字节、double8个字节。
 答：上面这题修饰词使用不当也会发生，blok里面持有self，self持有block、delegate用strong修饰、timer强制持有target，如果timer到点后不调用invalidate的话也会发生、两个对象相互引用用strong修饰。
 
 8. A、B两个label用autolayout横向布局，如何让文字过长时挤压A而不挤压B？
-答：设置A视图最大宽度相对于父视图垂直居中，距左leading = 10，B视图距A视图右边为10px，距父视图右边上下0px。
+答：设置A、B视图相对于父视图纵向居中，A距左为10px，B距父视图右边10px，A、B相距10px。由于label、imageView、UIButton遵循intrinsicContentSize在不设置大小的情况，指定了位置约束不会出错，现在A、B设置了间距但是由于文字过长的时候谁挤压谁这个是个问题，可以通过设置Content Hugging Priority 和 Content Compression Resistance Priority的优先级来使谁变大谁缩小。
+Content Hugging Priority: 该优先级表示一个控件抗被拉伸的优先级。优先级越高，越不容易被拉伸，默认是250。
+Content Compression Resistance Priority: 该优先级和上面那个优先级相对应，表示一个控件抗压缩的优先级。优先级越高，越不容易被压缩，默认是750。
+所以要实现挤压A不挤压B，就让B的抗压缩优先级大于A的抗压缩优先级即可。
+
+9. 编写一个函数，接受一个数组array作为参数，array中包含N个长度不等的升序数组，请将这N个数组合并，并保证合并后的数组也是升序。
+答：归并排序
+10. 写出快速排序、冒泡排序、选择排序。
+// MARK: 快速排序 
+    /**
+     值类型
+     传递的是参数的一个副本，这样在调用参数的过程中不会影响原始数据。
+     
+     引用类型
+     把参数本身引用(内存地址)传递过去，在调用的过程会影响原始数据。
+     在Swift众多数据类型中，只有class是引用类型，
+     其余的如Int,Float,Bool,Character,Array,Set,enum,struct全都是值类型.
+     inout:关键字修饰可以将一个值类型参数以引用方式传递。
+     数内部实现改变外部参数
+     传入参数时(调用函数时)，在变量名字前面用&符号修饰表示。表明这个变量在参数内部是可以被改变的（可将改变传递到原始数据）
+     注意：
+     inout修饰的参数是不能有默认值的(例子中length = 10被赋予默认值)，有范围的参数集合也不能被修饰；
+     一个参数一旦被inout修饰，就不能再被var和let修饰了。
+     */
+    func quickSort(list: inout Array<Int>)
+    {
+        quickRecursive(list: &list, leftIndex: 0, rightIndex: list.count - 1)
+    }
+    
+    func quickRecursive(list: inout Array<Int>, leftIndex: Int, rightIndex: Int)
+    {
+        if leftIndex >= rightIndex {
+            return
+        }
+        var i = leftIndex + 1
+        var j = rightIndex
+        let pivot = list[leftIndex]
+        while i < j {
+            while i < list.count && list[i] > pivot {
+                i = i + 1
+            }
+            while j >= 0 && list[j] < pivot {
+                j = j - 1
+            }
+            if i < j {
+                swap(object1: &list[i], object2: &list[j])
+            }
+        }
+        swap(object1: &list[j], object2: &list[leftIndex])
+        quickRecursive(list: &list, leftIndex: leftIndex, rightIndex: j - 1)
+        quickRecursive(list: &list, leftIndex: j + 1, rightIndex: rightIndex)
+    }
+    
+    func swap(object1: inout Int, object2: inout Int)
+    {
+        let temp = object1
+        object1 = object2
+        object2 = temp
+    }
+    
+    // MARK: 冒泡排序
+    func bubbleSort(list: inout Array<Int>)  {
+        if list.count == 1 {
+            return
+        }
+        //左归排序
+        for i in 0..<list.count - 1 {
+            for j in 0..<list.count - i - 1 {
+                if list[j] > list[j + 1] && j < list.count {
+                    swap(object1: &list[j], object2: &list[j+1])
+                }
+            }
+        }
+        //右归排序
+        for  i in 0..<list.count - 1
+        {
+            for j in i..<list.count
+            {
+                if list[i] < list[j] {
+                    swap(object1: &list[i], object2: &list[j])
+                }
+            }
+        }
+    }
+    
+    //MARK: 选择排序
+    func selectionSort(list: inout Array<Int>) {
+        if list.count == 1 {
+            return
+        }
+        for i in 0..<list.count {
+            for j in i..<list.count {
+                if list[j] < list[i] {
+                    swap(object1: &list[j], object2: &list[i])
+                }
+            }
+        }
+    }
+
 ```
