@@ -63,7 +63,7 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
 9. 编写一个函数，接受一个数组array作为参数，array中包含N个长度不等的升序数组，请将这N个数组合并，并保证合并后的数组也是升序。
 答：归并排序。
 
-10. 写出快速排序、冒泡排序、选择排序。
+10. 写出快速排序、冒泡排序、选择排序、插入排序。
     // MARK: 快速排序 
     /**
      值类型
@@ -151,6 +151,18 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
                 if list[j] < list[i] {
                     swap(object1: &list[j], object2: &list[i])
                 }
+            }
+        }
+    }
+    
+    //MARK: 插入排序[8 4 3 5 2 1]
+    func insertionSort(list: inout Array<Int>)
+    {
+        for i in 1..<list.count {
+            var j = i
+            while j > 0 && list[j - 1] > list[j] {
+                swap(object1: &list[j - 1], object2: &list[j])
+                j = j - 1
             }
         }
     }
