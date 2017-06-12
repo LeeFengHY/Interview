@@ -218,4 +218,5 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
         }
     }
 
+10. 设计一个可扩展性较强的的缓存池，可以通过传入不同算法实现FIFO、LRU等调度方式。请描述思路并附上伪代码。
 ```
