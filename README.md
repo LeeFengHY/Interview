@@ -127,7 +127,7 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
      数内部实现改变外部参数
      传入参数时(调用函数时)，在变量名字前面用&符号修饰表示。表明这个变量在参数内部是可以被改变的（可将改变传递到原始数据）
      注意：
-     inout修饰的参数是不能有默认值的(例子中length = 10被赋予默认值)，有范围的参数集合也不能被修饰；
+     inout修饰的参数是不能有默认值的(比如list = [1, 2, 3]被赋予默认值)，有范围的参数集合也不能被修饰；
      一个参数一旦被inout修饰，就不能再被var和let修饰了。
      */
     func quickSort(list: inout Array<Int>)
