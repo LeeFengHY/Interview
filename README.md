@@ -236,5 +236,15 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
     c. FIFO（先进先出）原则，每次把数据插入到链表头部，每次移除尾部节点。
     d. 当然实际中还需要考虑更多更详细的细节，比如数据量过大缓存污染的问题、缓存策略要更加人性化、智能化。
     
-11. 
+11. 存在下面三个接口：
+fetchStory(StoryId) -> List<ChapterId>
+fetchChapter(ChapterId) -> Chapter
+output(Chapter)
+设置一套文章请求框架，画图加伪代码
+答：a. output应该根据章节缓存顺序执行。
+   b. try-catch之后应该取消后续操作。
+   c. 请求并发最多为2。
+
+12. 你为代码改进做了哪些工作
+答： 自述！
 ```
