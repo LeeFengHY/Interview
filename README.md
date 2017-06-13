@@ -197,13 +197,20 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
             return
         }
         for i in 0..<list.count {
-            for j in i..<list.count {
-                if list[j] < list[i] {
-                    swap(object1: &list[j], object2: &list[i])
+            var minItem = list[i]
+            var index = i
+            for j in (i + 1)..<list.count {
+                if list[j] < minItem {
+                    minItem = list[j]
+                    index = j
                 }
+            }
+            if index != i {
+                swap(object1: &list[index], object2: &list[i])
             }
         }
     }
+
     
     //MARK: 插入排序[8 4 3 5 2 1]
     func insertionSort(list: inout Array<Int>)
