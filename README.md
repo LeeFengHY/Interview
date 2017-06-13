@@ -219,4 +219,22 @@ Content Compression Resistance Priority: 该优先级和上面那个优先级相
     }
 
 10. 设计一个可扩展性较强的的缓存池，可以通过传入不同算法实现FIFO、LRU等调度方式。请描述思路并附上伪代码。
+答：扩展性强可采用protocol，数据实现了这个协议即可。
+    protocol Cacheable {
+    var priority: Int {get}
+    var node: Any {get}
+    var key: String {get}
+  }
+   class LinkedMapNode: Cacheable {
+    var prev: LinkedMapNode?
+    var next: LinkedMapNode?
+    var cost: Int?
+    var time: TimeInterval?
+}
+    a. 定义一组枚举FIFO、LRU、或者Mix，采用双向链表的方式根据不同的算法，操作缓存池里面的数据。
+    b. 比如LRU（使用最少移出），每次新数据直接插入到链表头部，每次数据被使用时移动到链表头部，每次缓存满了或者内存不足时移除链表尾部节点。
+    c. FIFO（先进先出）原则，每次把数据插入到链表头部，每次移除尾部节点。
+    d. 当然实际中还需要考虑更多更详细的细节，比如数据量过大缓存污染的问题、缓存策略要更加人性化、智能化。
+    
+11. 
 ```
