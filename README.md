@@ -52,7 +52,55 @@ char1个字节、float2个字节int4个字节、double8个字节。
 答：因为xib创建的ViewController或者View，xib是强制持有的，xib连接的属性用weak修饰的话是为了防止相互持有导致谁都释放不了发生内存泄露（定义的属性ViewController或者View weak持有xib对象再则保证了xib生命周期和ViewController和View一样改用strong对象就变为强引用，谁都不能释放内存泄露。
 
 7. 请写出一段导致内存泄露的代码（越多越好）
-答：上面这题修饰词使用不当也会发生，blok里面持有self，self持有block、delegate用strong修饰、timer强制持有target，如果timer到点后不调用invalidate的话也会发生、两个对象相互引用用strong修饰。
+答：a.上面这题修饰词使用不当也会发生，blok里面持有self，self持有block、delegate用strong修饰、timer强制持有target，如果timer到点后不调用invalidate的话也会发生、两个对象相互引用用strong修饰。
+b.下面这段代码：
+```objc
++ (instancetype)initWithActionBlock:(LLGestureBlock)block {
+  return [[self alloc] initWithTarget: [self _gestureRecognizerBlockTarget:block] selector:@selector(invoke:)];
+}
+
++ (_LLGestureRecognizerBlockTarget *)_gestureRecognizerBlockTarget:(LLGestureBlock)block{
+  _LLGestureRecognizerBlockTarget *target = objc_getAssociatedObject(self, &target_key);
+  if (!target) {
+    target = [[_LLGestureRecognizerBlockTarget alloc]initWithBlock:block];
+    objc_setAssociatedObject(self, &target_key, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  return target;
+}
+```
+这样导致的结果就是，变量被绑到了这个类对象上，因为在类方法里面 self 指的是这个类对象，而类对象是常驻内存直到程序退出才释放的，这也就导致了这个类上始终绑着第一次的target，之后无论怎样都不会改变。如果恰好你在 block 中有强制持有了 block 外的其他对象，那就会导致这些对象都不会释放，造成内存泄露。在实例方法中动态绑定即可解决。
+```objc
+//准确代码
+static const int target_key;  
+@implementation UIGestureRecognizer (Block)
+
++(instancetype)nvm_gestureRecognizerWithActionBlock:(LLGestureBlock)block {
+  return [[self alloc]initWithActionBlock:block];
+}
+
+- (instancetype)initWithActionBlock:(LLGestureBlock)block {
+  self = [self init];
+  [self addActionBlock:block];
+  [self addTarget:self action:@selector(invoke:)];
+  return self;
+}
+
+- (void)addActionBlock:(LLGestureBlock)block {
+  if (block) {
+    objc_setAssociatedObject(self, &target_key, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+  }
+}
+
+- (void)invoke:(id)sender {
+  LLGestureBlock block = objc_getAssociatedObject(self, &target_key);
+  if (block) {
+    block(sender);
+  }
+}
+
+@end
+```
+
 
 8. A、B两个label用autolayout横向布局，如何让文字过长时挤压A而不挤压B？
 答：设置A、B视图相对于父视图纵向居中，A距左为10px，B距父视图右边10px，A、B相距10px。由于label、imageView、UIButton遵循intrinsicContentSize在不设置大小的情况，指定了位置约束不会出错，现在A、B设置了间距但是由于文字过长的时候谁挤压谁这个是个问题，可以通过设置Content Hugging Priority 和 Content Compression Resistance Priority的优先级来使谁变大谁缩小。
